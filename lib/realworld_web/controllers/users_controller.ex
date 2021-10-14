@@ -22,7 +22,7 @@ defmodule RealworldWeb.UsersController do
   @doc """
   Returns the user with the given id
   """
-  def user_by_id(conn, params) do
-    conn
+  def user_by_id(conn, %{"userId" => id}) do
+    json conn, Repo.get_by(User, id: id)
   end
 end
