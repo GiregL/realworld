@@ -6,6 +6,7 @@ defmodule Realworld.Realworld.Article do
     field :body, :string
     field :description, :string
     field :title, :string
+    field :author, :id
 
     timestamps()
   end
@@ -13,7 +14,7 @@ defmodule Realworld.Realworld.Article do
   @doc false
   def changeset(article, attrs) do
     article
-    |> cast(attrs, [:title, :description, :body, :article_id])
-    |> validate_required([:title, :description, :body, :article_id])
+    |> cast(attrs, [:title, :description, :body, :author])
+    |> validate_required([:title, :description, :body, :author])
   end
 end
