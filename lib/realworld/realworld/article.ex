@@ -3,7 +3,6 @@ defmodule Realworld.Realworld.Article do
   import Ecto.Changeset
 
   schema "articles" do
-    field :article_id, :integer
     field :body, :string
     field :description, :string
     field :title, :string
