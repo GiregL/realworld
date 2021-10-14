@@ -2,6 +2,7 @@ defmodule Realworld.Realworld.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive{Jason.Encoder, only: [:id, :bio, :email, :password, :username]}
   schema "users" do
     field :bio, :string
     field :email, :string
