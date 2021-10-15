@@ -37,6 +37,17 @@ defmodule RealworldWeb.Router do
     get "/users/", UsersController, :user_list
     get "/users/:userId", UsersController, :user_by_id
     put "/users/", UsersController, :update_user
+
+    #
+    # Articles routes
+    get "/articles", ArticlesController, :article_list
+    get "/articles/feed", ArticlesController, :article_feed
+    get "/articles/:slug", ArticlesController, :article_by_slug
+
+    post "/articles", ArticlesController, :create_article
+    put "/articles/:slug", ArticlesController, :update_article
+    delete "/articles/:slug", ArticlesController, :delete_article
+
   end
 
   #
