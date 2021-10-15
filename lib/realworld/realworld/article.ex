@@ -2,6 +2,7 @@ defmodule Realworld.Realworld.Article do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:id, :body, :description, :title, :author]}
   schema "articles" do
     field :body, :string
     field :description, :string
