@@ -36,6 +36,7 @@ defmodule RealworldWeb.Router do
     # Users routes
     get "/users/", UsersController, :user_list
     get "/users/:userId", UsersController, :user_by_id
+    put "/users/", UsersController, :update_user
   end
 
   #
