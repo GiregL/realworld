@@ -2,9 +2,10 @@ defmodule Realworld.Realworld.Article do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, only: [:id, :body, :description, :title, :author]}
+  @derive {Jason.Encoder, only: [:id, :body, :description, :title, :author, :slug]}
   schema "articles" do
     field :body, :string
+    field :slug, :string
     field :description, :string
     field :title, :string
     field :author, :id
@@ -15,7 +16,7 @@ defmodule Realworld.Realworld.Article do
   @doc false
   def changeset(article, attrs) do
     article
-    |> cast(attrs, [:title, :description, :body, :author])
-    |> validate_required([:title, :description, :body, :author])
+    |> cast(attrs, [:title, :description, :body, :author, :slug])
+    |> validate_required([:title, :description, :body, :author, :slug])
   end
 end

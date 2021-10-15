@@ -45,4 +45,35 @@ defmodule RealworldWeb.ArticlesController do
     json conn, %{ "articles" => result }
   end
 
+  @doc """
+  Returns a list of articles:
+  - Made by the followed users
+  - The most recent first
+  """
+  def article_feed(conn, params) do
+    limit = Map.get(params, "limit", 20)
+    offset = Map.get(params, "offset", 0)
+
+    # TODO: Implement Followed users research and model
+
+    conn
+  end
+
+  @doc """
+  Returns the article with the corresponding slug
+  """
+  def article_by_slug(conn, %{"slug" => slug}) do
+    IO.inspect slug
+    article = Repo.all(from a in Article, where: like(a.slug, ^slug))
+
+    case article do
+      [] ->
+        conn
+        |> put_status(404)
+        |> json(%{"error" => "The given article does not exists."})
+      [article | _ ] ->
+        json conn, article
+    end
+  end
+
 end
