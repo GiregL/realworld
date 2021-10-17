@@ -157,4 +157,51 @@ defmodule RealworldWeb.ArticlesController do
 
   def create_article(conn, _params), do: conn |> put_status(400) |> json(%{"error" => "Invalid request, no article found."})
 
+  @doc """
+  Update an article, giving its slug and changes
+  """
+  def update_article(conn, %{"slug" => slug, "article" => article}) do
+    entity = Repo.get_by(Article, slug: slug)
+
+    if is_nil(entity) do
+      conn
+      |> put_status(404)
+      |> json(%{"error" => "Article not found."})
+    else
+
+      fields = [
+        {"title", :title},
+        {"description", :description},
+        {"body", :body},
+        {"author", :author},
+        {"slug", :slug}
+      ]
+
+      changeset = fields
+      |> Enum.reduce(Ecto.Changeset.change(entity, id: entity.id), fn {key, property}, acc ->
+        if Map.has_key?(article, key) do
+          Ecto.Changeset.put_change(acc, property, Map.get(article, key))
+        else
+          acc
+        end
+      end)
+
+      case Repo.update(changeset) do
+        {:ok, new_article} -> json(conn, new_article)
+        {:error, changeset} ->
+          IO.inspect changeset
+          conn
+          |> put_status(500)
+          |> json(%{"error" => "An error occured."})
+      end
+
+    end
+  end
+
+  def update_article(conn, _params) do
+    conn
+    |> put_status(400)
+    |> json(%{"error" => "Invalid request. No slug or article changes found."})
+  end
+
 end
