@@ -98,30 +98,13 @@ defmodule RealworldWeb.ArticlesController do
     # If the required keys are found
     else
 
-      base_article = %Article{
+      article = %Article{
         title: Map.get(params, "title"),
         description: Map.get(params, "description"),
-        body: Map.get(params, "body")
+        body: Map.get(params, "body"),
+        author: Map.get(params, "author"),
+        slug: Map.get(params, "slug")
       }
-
-      {:ok, pid} = Agent.start_link(fn -> base_article end)
-
-      # TODO: BUG DE MISE A JOUR DE LA MAP EN FONCTION DES DONNEES FOURNIES
-      params
-      |> Enum.each(fn {key, value} ->
-        if Map.has_key?(base_article, key) do   # If the key is found in the query
-
-          Agent.get_and_update(pid, fn article ->
-            Map.put(article, key, value)
-          end)
-          |> IO.inspect
-        end
-      end)
-
-      article = Agent.get(pid, &(&1))
-      IO.inspect(article)
-
-      Agent.stop(pid)
 
       case Repo.insert(article) do
         {:ok, inserted} ->
