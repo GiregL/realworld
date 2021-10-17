@@ -204,4 +204,36 @@ defmodule RealworldWeb.ArticlesController do
     |> json(%{"error" => "Invalid request. No slug or article changes found."})
   end
 
+  @doc """
+  Deletes the article with the given slug from the database
+
+  TODO: FIX CONSTRAINTS
+  """
+  def delete_article(conn, %{"slug" => slug}) do
+    article = Repo.get_by(Article, slug: slug)
+
+    if is_nil(article) do
+      conn
+      |> put_status(404)
+      |> json(%{"error" => "Article not found."})
+    else
+      case Repo.delete_all(from a in Article, where: a.id == ^article.id) do
+        {:ok, article} ->
+          json conn, %{"article" => article}
+        {:error, changeset} ->
+          IO.puts("[ERROR] Failed to delete article")
+          IO.inspect changeset
+          conn
+          |> put_status(500)
+          |> json(%{"error" => "Internal error, failed to delete article."})
+      end
+    end
+  end
+
+  def delete_article(conn, _params) do
+    conn
+    |> put_status(400)
+    |> json(%{"error" => "Invalid request, slug required."})
+  end
+
 end
