@@ -8,6 +8,7 @@ defmodule RealworldWeb.ArticlesController do
   alias Realworld.{Repo, Articles.Article, Articles.TagArticle, Realworld.Tag}
   import Ecto.Query
   import Realworld.Articles.ArticleCreation
+  import Realworld.Articles.GetArticles
 
   @doc """
   Returns the list of all articles from the database
@@ -64,16 +65,13 @@ defmodule RealworldWeb.ArticlesController do
   Returns the article with the corresponding slug
   """
   def article_by_slug(conn, %{"slug" => slug}) do
-    IO.inspect slug
-    article = Repo.all(from a in Article, where: like(a.slug, ^slug))
-
-    case article do
-      [] ->
+    case get_by_slug(slug) do
+      nil ->
         conn
         |> put_status(404)
         |> json(%{"error" => "The given article does not exists."})
-      [article | _ ] ->
-        json conn, article
+      article ->
+        json(conn, article)
     end
   end
 
