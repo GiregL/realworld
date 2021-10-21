@@ -65,5 +65,15 @@ defmodule Realworld.Articles.ArticleCreationTest do
       res = create_slug_from_title("Hello World")
       assert res == "hello-world"
     end
+
+    test "slug with complex chars" do
+      res = create_slug_from_title("Hello World !")
+      assert res == "hello-world"
+    end
+
+    test "slug with complex chars 2" do
+      res = create_slug_from_title("Say hello to my new twitter @azeazeaze !")
+      assert res == "say-hello-to-my-new-twitter-azeazeaze"
+    end
   end
 end

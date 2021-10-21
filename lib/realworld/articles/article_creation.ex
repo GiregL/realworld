@@ -39,15 +39,6 @@ defmodule Realworld.Articles.ArticleCreation do
     {:error, "Required parameters: title, body, description."}
   end
 
-  defp filter_nonalphanum([], acc), do: acc
-  defp filter_nonalphanum([head | tail], acc) do
-    if (head >= ?a and head <= ?z) or (head >= ?A and head <= ?Z) or (head >= ?0 and head <= ?9) do
-      filter_nonalphanum(tail, [head | acc])
-    else
-      filter_nonalphanum(tail, acc)
-    end
-  end
-
   @spec create_slug_from_title(String.t()) :: String.t()
   def create_slug_from_title(title) do
     title
@@ -55,8 +46,14 @@ defmodule Realworld.Articles.ArticleCreation do
     |> String.split()
     |> Enum.map(fn x -> String.downcase(x) end)
     |> Enum.map(fn word ->
-        filter_nonalphanum(String.to_charlist(word), [])
+        word
+        |> String.to_charlist()
+        |> Enum.filter(fn chr ->
+          (chr >= ?a and chr <= ?z) or (chr >= ?A and chr <= ?Z) or (chr >= ?0 and chr <= ?9)
+        end)
+        |> to_string()
       end)
+    |> Enum.filter(fn x -> String.length(String.trim(x)) != 0 end)
     |> Enum.join("-")
   end
 
