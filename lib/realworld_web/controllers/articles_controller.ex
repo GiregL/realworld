@@ -5,8 +5,9 @@ defmodule RealworldWeb.ArticlesController do
   Article controller
   """
 
-  alias Realworld.{Repo, Realworld.Article, Realworld.TagArticle, Realworld.Tag}
+  alias Realworld.{Repo, Articles.Article, Articles.TagArticle, Realworld.Tag}
   import Ecto.Query
+  import Realworld.Articles.ArticleCreation
 
   @doc """
   Returns the list of all articles from the database

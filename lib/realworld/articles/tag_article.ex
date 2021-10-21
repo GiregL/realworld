@@ -1,4 +1,4 @@
-defmodule Realworld.Realworld.TagArticle do
+defmodule Realworld.Articles.TagArticle do
   use Ecto.Schema
   import Ecto.Changeset
 
