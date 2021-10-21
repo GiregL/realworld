@@ -1,4 +1,4 @@
-defmodule Realworld.Realworld.Comment do
+defmodule Realworld.Articles.Comment do
   use Ecto.Schema
   import Ecto.Changeset
 

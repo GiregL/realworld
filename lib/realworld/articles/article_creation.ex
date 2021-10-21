@@ -5,6 +5,7 @@ defmodule Realworld.Articles.ArticleCreation do
 
   alias Realworld.Articles.Article
   alias Realworld.Articles.TagArticle
+  alias Realworld.Articles.Tag
   alias Realworld.Repo
 
   @doc """
@@ -17,7 +18,8 @@ defmodule Realworld.Articles.ArticleCreation do
     article = %Article{
       title: title,
       body: body,
-      description: description
+      description: description,
+      slug: create_slug_from_title(title)
     }
 
     # Optional fields
@@ -60,10 +62,10 @@ defmodule Realworld.Articles.ArticleCreation do
   @doc """
   Insert the given article into the database, using Ecto Schema
   """
-  @spec insert_article_in_database(Article.t()) :: :ok | {:error, String.t()}
+  @spec insert_article_in_database(Article.t()) :: {:ok, Article.t()} | {:error, String.t()}
   def insert_article_in_database(%Article{} = article) do
     case Repo.insert(article) do
-      {:ok, _} -> :ok
+      {:ok, article} -> {:ok, article}
       {:error, _} -> {:error, "Failed to insert article."}
     end
   end

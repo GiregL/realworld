@@ -83,80 +83,39 @@ defmodule RealworldWeb.ArticlesController do
   Optional fields: tagList
   """
   def create_article(conn, %{"article" => params}) do
-    tagList = Map.get(params, "tagList", [])
-
-    #
-    # If the required keys are not found
-    if not Map.has_key?(params, "title")
-      or not Map.has_key?(params, "description")
-      or not Map.has_key?(params, "body") do
-
-      conn
-      |> put_status(400)
-      |> json(%{"error" => "Required fields not found: title, description, body"})
-
-    #
-    # If the required keys are found
-    else
-
-      article = %Article{
-        title: Map.get(params, "title"),
-        description: Map.get(params, "description"),
-        body: Map.get(params, "body"),
-        author: Map.get(params, "author"),
-        slug: Map.get(params, "slug")
-      }
-
-      case Repo.insert(article) do
-        {:ok, inserted} ->
-          article_id = inserted.id
-
-          #
-          # Adding all the tags to the new article
-          taglist_insertion = tagList
-          |> Enum.map(fn tag ->
-            # Adding the tags
-            tag_id = Repo.get_by(Tag, title: tag)
-
-            if is_nil(tag_id) do
-              {:error, "Tag: " <> tag <> " does not exists."}
-            else
-              case Repo.insert(%TagArticle{tag: tag_id.id, article: article_id}) do
-                {:ok, _} -> :ok
-                {:error, _} -> {:error, "Failed to add tag " <> tag <> " to article " <> article_id}
+    case create_article_from_params(params) do
+      {:ok, article} ->
+        case insert_article_in_database(article) do
+          {:ok, article} ->
+            if Map.has_key?(params, "tagList") do
+              case insert_article_tags(article, Map.get(params, "tagList")) do
+                :ok -> json(conn, %{"success" => "Article and tags added."})
+                {:error, message} ->
+                  conn
+                  |> put_status(500)
+                  |> json(%{"error" => message})
               end
+            else
+              json(conn, %{"success" => "Article added."})
             end
-          end)
-          |> Enum.all?(fn x ->
-            # Checking if all tags are added
-            case x do
-              :ok -> true
-              {:error, message} ->
-                IO.puts message
-                false
-            end
-          end)
-
-          # If a insertion fail occured
-          if taglist_insertion do
-            conn
-            |> put_status(201)
-            |> json(%{"success" => "Article added."})
-          else
+          {:error, message} ->
             conn
             |> put_status(500)
-            |> json(%{"error" => "An error occured during tag association to the new article"})
-          end
+            |> json(%{"error" => message})
+        end
 
-        {:error, _} ->
-          conn
-          |> put_status(500)
-          |> json(%{"error" => "Internal error, failed to insert new article."})
-      end
+      {:error, message} ->
+        conn
+        |> put_status(400)
+        |> json(%{"error" => message})
     end
   end
 
-  def create_article(conn, _params), do: conn |> put_status(400) |> json(%{"error" => "Invalid request, no article found."})
+  def create_article(conn, _) do
+    conn
+    |> put_status(400)
+    |> json(%{"error" => "Invalid request, no article provided."})
+  end
 
   @doc """
   Update an article, giving its slug and changes
