@@ -60,7 +60,7 @@ defmodule Realworld.Articles.ArticleCreation do
   @doc """
   Insert the given article into the database, using Ecto Schema
   """
-  @spec insert_article_in_database(Article) :: :ok | {:error, String.t()}
+  @spec insert_article_in_database(Article.t()) :: :ok | {:error, String.t()}
   def insert_article_in_database(%Article{} = article) do
     case Repo.insert(article) do
       {:ok, _} -> :ok
@@ -71,6 +71,7 @@ defmodule Realworld.Articles.ArticleCreation do
   @doc """
   Inserts the tags of the given article into the database.
   """
+  @spec insert_article_tags(Article.t(), list(String.t())) :: :ok | {:error, String.t()}
   def insert_article_tags(%Article{id: nil}, _), do: {:error, "This article does not exists in the database. No ID found."}
   def insert_article_tags(%Article{} = article, tagList) do
     article_id = article.id
